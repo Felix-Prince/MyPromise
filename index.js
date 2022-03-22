@@ -1,24 +1,35 @@
-const stateArr = ["pending", "fulfilled", "rejected"];
+const STATE_MAP = {
+    PENDING: "pending",
+    FULFILLED: "fulfilled",
+    REJECTED: "rejected",
+};
 
 class MyPromise {
     constructor(callback) {
-        this.state = stateArr[0]; // 当前状体
+        this.state = STATE_MAP.PENDING; // 当前状体
         this.value = null; // 完成时的返回值
         this.reason = null; // 失败的原因
+        this.resolveArr = []; // 记录所有的 resolve 方法再状态变为 fulfilled 后遍历这些方法
+        this.rejectArr = []; // 再状态变为 rejected 后执行
         callback(this.resolve, this.reject);
     }
 
     resolve = (value) => {
         // 只有从 pending 到 fulfilled
-        if (this.state === stateArr[0]) {
-            this.state = stateArr[1]; // pending -> fulfilled
+        if (this.state === STATE_MAP.PENDING) {
+            this.state = STATE_MAP.FULFILLED; // pending -> fulfilled
             this.value = value;
+
+            // 循环执行 then 已插入的 resolve 方法
+            this.resolveArr.forEach((fn) => fn(value));
         }
     };
     reject = (reason) => {
-        if (this.state === stateArr[0]) {
-            this.state = stateArr[2]; // pending -> rejected
+        if (this.state === STATE_MAP.PENDING) {
+            this.state = STATE_MAP.REJECTED; // pending -> rejected
             this.reason = reason;
+
+            this.rejectArr.forEach((fn) => fn(reason));
         }
     };
 
@@ -31,8 +42,40 @@ class MyPromise {
         onRejected =
             typeof onRejected === "function" ? onRejected : (reason) => reason;
 
+        // 当还是 pending  的时候
+        if (this.state === STATE_MAP.PENDING) {
+            return new MyPromise((resolve, reject) => {
+                // 成功的回调
+                this.resolveArr.push((value) => {
+                    try {
+                        const result = onFulfilled(value);
+                        if (result instanceof MyPromise) {
+                            result.then(resolve, reject);
+                        } else {
+                            resolve(result);
+                        }
+                    } catch (error) {
+                        reject(error);
+                    }
+                });
+
+                this.rejectArr.push((reason) => {
+                    try {
+                        const result = onRejected(reason);
+                        if (result instanceof MyPromise) {
+                            result.then(resolve, reject);
+                        } else {
+                            resolve(result);
+                        }
+                    } catch (error) {
+                        reject(error);
+                    }
+                });
+            });
+        }
+
         // it must be called after promise is fulfilled,
-        if (this.state === stateArr[1]) {
+        if (this.state === STATE_MAP.FULFILLED) {
             // 当前状态时 fulfilled 的时候
             return new MyPromise((resolve, reject) => {
                 try {
@@ -53,7 +96,7 @@ class MyPromise {
             });
         }
 
-        if (this.state === stateArr[2]) {
+        if (this.state === STATE_MAP.REJECTED) {
             // 当前状态时 rejected 的时候
             return new MyPromise((resolve, reject) => {
                 try {
@@ -73,10 +116,17 @@ class MyPromise {
     };
 }
 
-const promise1 = new MyPromise((resolve, reject) => {
-    resolve("123");
-    reject(456);
+const promise1 = new MyPromise((resolve) => {
+    setTimeout(() => {
+        console.log("---setTimeout--");
+        resolve("123");
+    }, 2000);
 });
+
+// const promise1 = new MyPromise((resolve, reject) => {
+//     resolve("123");
+//     reject(456);
+// });
 
 // 注意：此时还不是异步的，所以打印输出的结果是先 then 里的，再打印 promise1
 const promise2 = promise1.then(
