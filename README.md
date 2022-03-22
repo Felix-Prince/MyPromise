@@ -1,8 +1,8 @@
-# commmit 1
+# [commit 1](https://github.com/Felix-Prince/MyPromise/commit/dbe381baf4e1cc469c276a1fa6754eb4b356e8cc)
 
 ## 初始化项目 & 简单完成状态的转换
 
-# commit 2
+# [commit 2](https://github.com/Felix-Prince/MyPromise/commit/ce3a72c59d5b6b9053f0310073a455be7c0e62a5)
 
 ## 简单实现了 promise 的 then
 
@@ -11,7 +11,7 @@
 -   递归处理 onFulfilled 和 onRejected 的返回的 x
 -   onFulfilled 和 onRejected 是一个异步的操作
 
-# commit 3
+# [commit 3](https://github.com/Felix-Prince/MyPromise/commit/050f3553745bbe81d49fc4b5b19c998da3563625)
 
 ## 处理 resolve 中异步的情况
 
