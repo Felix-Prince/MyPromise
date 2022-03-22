@@ -25,3 +25,9 @@ const promise1 = new MyPromise((resolve, reject) => {
 ```
 
 如果像上面这样处理后，resolve 是一个 异步的操作，导致再执行到 then 的时候，我们的状态还是 pending 的，也就不会执行到对应的 then 判断里，一次我们还需要处理一下异步的情况
+
+# [commit 4](https://github.com/Felix-Prince/MyPromise/commit/ac30c0bc71df0df16f0fd2f033b674c17633c8cc)
+
+## 处理 commit 的遗留 —— onFulfilled 和 onRejected 是一个异步的操作
+
+现在再控制台的 console 就是安对应的数字顺序舒服的
