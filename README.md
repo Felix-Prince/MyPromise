@@ -1,3 +1,5 @@
+根绝 [Promise+](https://promisesaplus.com/) 规范实现一个自己的 Promise
+
 # [commit 1](https://github.com/Felix-Prince/MyPromise/commit/dbe381baf4e1cc469c276a1fa6754eb4b356e8cc)
 
 ## 初始化项目 & 简单完成状态的转换
